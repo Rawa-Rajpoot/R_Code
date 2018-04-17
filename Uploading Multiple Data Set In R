@@ -1,0 +1,45 @@
+### select data set from menu
+Library(Shiny)
+
+filteredData <- reactive({  if(is.null(input$dataset))
+  return()
+
+
+  if(is.null(input$dataset))
+    return()
+
+Data1 <- read.table(file = "data/sample_wkly.csv", sep = ",",  header =
+                      
+                      TRUE, row.names = NULL)
+Data2 <- read.table(file = "data/sample_mthly.csv", sep = ",",  header =
+                      
+                      TRUE, row.names = NULL)
+
+ui <- fluidPage(
+  sidebarLayout( 
+    sidebarPanel( 
+      selectInput("Data", "Choose data:", 
+                  choices =  c("dt_1","dt_2"), selected = "dt_1"),
+    
+    ),
+    
+    mainPanel(
+      DT::dataTableOutput("DisplayData")
+    )
+  )
+)
+
+server <- function(input, output) {
+  
+  Data_to_display <<- reactive({
+    switch(input$Data,
+           "dt_1" = Data1,
+           "dt_2" = Data2)
+  })
+  
+  
+  output$DisplayData <- DT::renderDataTable({
+    DT::datatable(Data_to_display())
+  })
+}
+shinyApp(ui, server)
